@@ -1,0 +1,324 @@
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import TextBox from "devextreme-react/text-box";
+import Button from "devextreme-react/button";
+import Validator from "devextreme-react/validator";
+import { ReactComponent as IconCheckbox } from "../../../icons/checkbox-line.svg";
+import { ReactComponent as IconCheckboxblankline } from "../../../icons/checkbox-blank-line.svg";
+import { CustomRule, EmailRule } from "devextreme-react/form";
+import GoogleIcon from "./google.jpeg";
+import { toastDisplayer } from "../../toastDisplay/toastDisplayer";
+import axios from "axios";
+import { useAuth } from "../../../contexts/auth";
+import { useGoogleLogin } from "@react-oauth/google";
+import { Button as TextBoxButton } from "devextreme-react/text-box";
+import { LoadPanel } from "devextreme-react";
+
+//import { GoogleLogin } from "react-google-login";
+
+export default function RegistrationForm() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+  const [checked, setChecked] = useState(false);
+  const [checkedLowercase, setCheckedLowercase] = useState(false);
+  const [checkedUppercase, setCheckedUppercase] = useState(false);
+  const [checkedNumber, setCheckedNumber] = useState(false);
+  const [checkedSpecialCharacter, setCheckedSpecialCharacter] = useState(false);
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const emailValidatorRef = React.createRef();
+  const passwordValidatorRef = React.createRef();
+  const { signInWithGoogle } = useAuth();
+  const [showpwd, setshowpwd] = useState(false);
+  const [passwordMode, setPasswordMode] = useState("password");
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.value); // Make sure this line is correctly updating the state
+    if (e.value.length >= 8) {
+      setChecked(true);
+    } else {
+      setChecked(false);
+    }
+    const hasLowercase = /[a-z]/.test(e.value);
+    setCheckedLowercase(hasLowercase);
+
+    const hasUppercase = /[A-Z]/.test(e.value);
+    setCheckedUppercase(hasUppercase);
+
+    const hasNumber = /[0-9]/.test(e.value);
+    setCheckedNumber(hasNumber);
+
+    const hasSpecialCharacter = /[^\w\s]/.test(e.value);
+    setCheckedSpecialCharacter(hasSpecialCharacter);
+  };
+
+  const validatePassword = () => {
+    return (
+      checked &&
+      checkedLowercase &&
+      checkedUppercase &&
+      checkedNumber &&
+      checkedSpecialCharacter
+    );
+  };
+
+  const handleGoogleLogin = async () => {
+    window.location.href =
+      "http://localhost:8000/api/auth/login/google-oauth2/";
+  };
+
+  const handleContinue = async () => {
+    const isEmailValid =
+      emailValidatorRef.current &&
+      emailValidatorRef.current.instance.validate().isValid;
+    const isPasswordValid =
+      passwordValidatorRef.current &&
+      passwordValidatorRef.current.instance.validate().isValid;
+
+    if (!isEmailValid) {
+      return toastDisplayer("error", "Enter correct Email");
+    }
+    if (!isPasswordValid) {
+      return toastDisplayer("error", "Enter correct password");
+    }
+
+    if (isEmailValid && isPasswordValid) {
+      // navigate("/SignatureSetup", {
+      //   state: { regEmail: email, regPwd: password },
+      // });
+      try {
+        setLoading(true);
+        const response = await axios.post(
+          `http://localhost:8000/api/sendOtp/`,
+          {
+            email: email,
+            "filter": null
+          }
+        );
+
+        if (
+          response.data.Status === 400 &&
+          response.data.StatusMsg === "This email already register..!!"
+        ) {
+          setLoading(false);
+          return toastDisplayer("error", "This email already register..!!");
+        }
+
+        if (
+          response.data.Status === 200 &&
+          response.data.StatusMsg ===
+            "User already verified but still you can request after 5 min..!!"
+        ) {
+          setLoading(false);
+          return toastDisplayer(
+            "error",
+            "User already verified but still you can request after 5 min..!!"
+          );
+        }
+
+        if (
+          response.data.success === false &&
+          response.data.message ===
+            `(1062, \"Duplicate entry '${email}' for key 'email'\")`
+        ) {
+          setLoading(false);
+          return toastDisplayer("error", `${email} is already verified`);
+        }
+
+        if (response.data.success === false) {
+          setLoading(false);
+          return toastDisplayer("error", "Unable to send OTP");
+        }
+
+        if (response.data.Status === 200) {
+          setLoading(false);
+          navigate("/RegOtp", {
+            state: { regEmail: email, regPwd: password },
+          });
+        }
+      } catch (error) {
+        setLoading(false);
+        console.log(error);
+      }
+    }
+  };
+  const login = useGoogleLogin({
+    onSuccess: (codeResponse) => signInWithGoogle(codeResponse),
+    onError: (error) => console.log("Login Failed:", error),
+  });
+
+  const onbackClick = () => {
+    navigate("/SignInForm");
+  };
+
+  return (
+    <>
+    {loading ? <LoadPanel visible="true" /> : ""}
+      <div className="container-main">
+        <div className="box box-1"></div>
+        <div className="box box-2">
+          <div className="card">
+            <div className="upper-section">Sign-akshar</div>
+            <Button
+              icon="back"
+              className="backBtn"
+              text="Go Back"
+              onClick={onbackClick}
+              width={"auto"}
+            />
+            <div className="lower-section">
+              <div className="step">Step 1 of 3</div>
+              <div className="create-acc">
+                Create an account to sign document easily
+              </div>
+              <div className="already">
+                Already have an account?{" "}
+                <Link to="/SignInForm" className="login">
+                  Log in
+                </Link>
+              </div>
+              <div className="email-add">
+                Email Address <span className="required">*</span>
+              </div>
+              <TextBox
+                placeholder="Enter Email address"
+                stylingMode="outlined"
+                width={"100%"}
+                className="custom-textbox"
+                value={email}
+                onValueChanged={(e) => setEmail(e.value.toLowerCase())}
+              >
+                <Validator ref={emailValidatorRef}>
+                  <EmailRule message="Please enter a valid email address." />
+                </Validator>
+              </TextBox>
+              <div className="email-add">
+                Password <span className="required">*</span>
+              </div>
+              <TextBox
+                stylingMode="outlined"
+                placeholder="Enter password"
+                className="custom-textbox"
+                mode={passwordMode}
+                onFocusIn={() => {
+                  setIsPasswordFocused(true);
+                }}
+                // onFocusOut={() => {
+                //   setIsPasswordFocused(false);
+                // }}
+                valueChangeEvent="keyup"
+                onValueChanged={handlePasswordChange}
+              >
+                <Validator ref={passwordValidatorRef}>
+                  <CustomRule
+                    message="Password must meet the specified criteria."
+                    validationCallback={validatePassword}
+                  />
+                </Validator>
+                <TextBoxButton
+                  name="password"
+                  location="after"
+                  options={{
+                    icon: `${showpwd ? "eyeopen" : "eyeclose"}`,
+                    stylingMode: "text",
+                    onClick: () => {
+                      setshowpwd(!showpwd);
+                      setPasswordMode((prevPasswordMode) =>
+                        prevPasswordMode === "text" ? "password" : "text"
+                      );
+                    },
+                  }}
+                />
+              </TextBox>
+              {isPasswordFocused && (
+                <>
+                  <div
+                    className="password-container"
+                    style={{
+                      backgroundColor: "#FBFBFB",
+                      padding: "12px",
+                      marginTop: "4px",
+                    }}
+                  >
+                    <div className="password">Password must be</div>
+                    <span className="checkbox">
+                      {checked ? <IconCheckbox /> : <IconCheckboxblankline />}
+                      Minimum of 8 characters
+                    </span>
+                    <span className="checkbox">
+                      {checkedLowercase ? (
+                        <IconCheckbox />
+                      ) : (
+                        <IconCheckboxblankline />
+                      )}{" "}
+                      Include at least one lowercase letter (a-z)
+                    </span>
+                    <span className="checkbox">
+                      {checkedUppercase ? (
+                        <IconCheckbox />
+                      ) : (
+                        <IconCheckboxblankline />
+                      )}{" "}
+                      Include at least one Uppercase letter (A-Z)
+                    </span>
+                    <span className="checkbox">
+                      {checkedNumber ? (
+                        <IconCheckbox />
+                      ) : (
+                        <IconCheckboxblankline />
+                      )}{" "}
+                      Include at least one number (0-9)
+                    </span>
+                    <span className="checkbox">
+                      {checkedSpecialCharacter ? (
+                        <IconCheckbox />
+                      ) : (
+                        <IconCheckboxblankline />
+                      )}{" "}
+                      Include at least one special character
+                    </span>
+                  </div>
+                </>
+              )}
+              <div className="forgot-pass">
+                {/* <Link to="/MainUser" className="forgot-pass">
+                  Forgot Password?
+                </Link> */}
+              </div>
+              <Button
+                className="submit-button"
+                text="Continue"
+                type="default"
+                textTransform="none"
+                onClick={handleContinue}
+                disabled={loading}
+              />
+              <div className="or">or</div>
+              <Button
+                className="google-button"
+                type="default"
+                textTransform="none"
+                onClick={login} // Call handleGoogleLogin when the button is clicked
+              >
+                <img
+                  src={GoogleIcon}
+                  width={25}
+                  alt="Google Icon"
+                  className="google-icon"
+                />
+                Continue with Google
+              </Button>
+              <div className="agree">
+                I agree with your{" "}
+                <Link to="/login" className="agree">
+                  Terms of Service
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
