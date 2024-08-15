@@ -27,10 +27,10 @@ Signakshar is a digital signature solution designed to streamline the process of
 
 ## Installation and Setup
 1. **Clone the Repository**:
-   ```bash
+```bash
    git clone https://github.com/yourusername/signakshar.git
    cd signakshar
-  ```
+```
 
 2. **Backend Setup**:
 
