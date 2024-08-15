@@ -1,70 +1,76 @@
-# Getting Started with Create React App
+# Signakshar - Digital Signature Solution
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Project Overview
+Signakshar is a digital signature solution designed to streamline the process of signing documents. Users can upload documents, specify the positions where one or multiple recipients need to sign or place logos, and then send the document for signing either sequentially (one after the other) or in parallel (all recipients at once). After all signatures are collected, users can view the fully signed document.
 
-## Available Scripts
+## Key Features
+- **Document Upload**: Easily upload documents that need to be signed.
+- **Signature Placement**: Define specific areas on the document where each recipient needs to sign or place their logo.
+- **Sequential Signing**: Send the document to recipients one by one in a specific order, ensuring each signature is collected in sequence.
+- **Parallel Signing**: Send the document to all recipients simultaneously, allowing them to sign at their convenience.
+- **View Signed Document**: After all signatures are collected, users can view and download the fully signed document.
 
-In the project directory, you can run:
+## Technologies Used
+- **Backend**: Python Django
+- **Database**: MySQL
+- **Frontend**: React.js
+- **Others**: HTML, CSS, JavaScript
 
-### `npm start`
+## How It Works
+1. **Upload Document**: Start by uploading the document that requires signatures.
+2. **Set Signature Positions**: Drag and drop or select specific areas on the document for each recipient to sign or place their logo.
+3. **Choose Signing Method**:
+   - **Sequential**: Send the document to recipients in a specific order.
+   - **Parallel**: Send the document to all recipients at once.
+4. **Send Document**: The document is sent out for signing based on the selected method.
+5. **View Signed Document**: Once all signatures are collected, the final signed document is available for viewing and download.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Installation and Setup
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/yourusername/signakshar.git
+   cd signakshar
+  ```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+2. **Backend Setup**:
 
-### `npm test`
+- Make sure you have Python and Django installed.
+- Install Python dependencies:
+```bash
+pip install -r requirements.txt
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Set up the MySQL database and update the settings.py file with your database credentials.
 
-### `npm run build`
+3. **Frontend Setup**:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Make sure you have Node.js and npm installed.
+- Navigate to the frontend directory and install required dependencies:
+```bash
+cd frontend
+npm install
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+4. **Run the Application**:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Start the Django server:
+```bash
+python manage.py runserver
+```
 
-### `npm run eject`
+- Start the React development server:
+```bash
+npm start
+```
+- Open your browser and navigate to http://localhost:3000 for the frontend and http://localhost:8000 for the backend.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Usage
+- Upload a Document: Navigate to the upload section and select the document you wish to be signed.
+- Set Signature Positions: Use the interactive document viewer to set where each recipient should sign or place their logo.
+- Send for Signing: Choose between sequential or parallel signing and send the document.
+- Monitor Progress: Track the signing status and view the final signed document once all signatures are completed.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Future Enhancements
+- Integration with Cloud Storage: Allow users to save and manage their signed documents in cloud storage solutions like Google Drive or Dropbox.
+- Mobile App: Develop a mobile application to make signing documents on the go easier.
+- Advanced Security Features: Implement additional security measures, such as multi-factor authentication and encryption, to ensure the integrity and confidentiality of signed documents.
